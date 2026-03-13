@@ -1,0 +1,48 @@
+$kind: http-request
+description: |-
+  **gRPC — TaskService.GetTasksByAssignee**
+
+  Proto package: `task`  
+  Service: `TaskService`  
+  Method: `GetTasksByAssignee`  
+  Server URL: `localhost:50052`  
+  Proto file: `src/proto/task.proto`
+
+  Returns all active tasks assigned to a given user ID.
+
+  **Request message:**
+  ```json
+  { "assigneeId": "<mongodb-object-id>" }
+  ```
+
+  **Response message:**
+  ```json
+  {
+    "tasks": [
+      {
+        "id": "...",
+        "title": "My first task",
+        "status": "in_progress",
+        "priority": "medium",
+        "creatorId": "...",
+        "assigneeId": "...",
+        ...
+      }
+    ]
+  }
+  ```
+url: "{{grpc_url}}"
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: X-Grpc-Note
+    value: "Use Postman gRPC client: package=task, service=TaskService, method=GetTasksByAssignee"
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "assigneeId": "{{user_id}}"
+    }
+order: 2000

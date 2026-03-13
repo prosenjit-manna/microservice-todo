@@ -1,0 +1,38 @@
+$kind: http-request
+description: |-
+  Login via the gateway. Returns a JWT token.
+
+  The `afterResponse` script saves `token`, `user_id`, and `user_email` to
+  collection variables for use in subsequent requests.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation Login($input: LoginInput!) { login(loginInput: $input) { accessToken user { _id email username } } }",
+      "variables": {
+        "input": {
+          "email": "alice@example.com",
+          "password": "password123"
+        }
+      }
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      const json = pm.response.json();
+      const auth = json?.data?.login;
+      if (auth?.accessToken) {
+        pm.collectionVariables.set('token', auth.accessToken);
+        console.log('token saved');
+      }
+      if (auth?.user?._id) {
+        pm.collectionVariables.set('user_id', auth.user._id);
+        pm.collectionVariables.set('user_email', auth.user.email);
+        console.log('user_id saved:', auth.user._id);
+      }
+order: 1000

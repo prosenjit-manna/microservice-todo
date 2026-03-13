@@ -1,0 +1,31 @@
+$kind: http-request
+description: |-
+  Protected — Updates an existing task. Only the task creator can update it.
+
+  Uses `task_id` collection variable (auto-set by **Create Task**).
+
+  All fields in `UpdateTaskInput` are optional. Only include the fields you
+  want to change.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) { updateTask(id: $id, updateTaskInput: $input) { _id title description status priority creatorId assigneeId dueDate tags isActive updatedAt } }",
+      "variables": {
+        "id": "{{task_id}}",
+        "input": {
+          "title": "Updated task title",
+          "description": "Updated description",
+          "priority": "high",
+          "tags": ["updated", "postman"]
+        }
+      }
+    }
+order: 2000

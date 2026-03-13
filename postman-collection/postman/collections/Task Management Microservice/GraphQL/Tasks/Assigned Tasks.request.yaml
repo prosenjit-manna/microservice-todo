@@ -1,0 +1,19 @@
+$kind: http-request
+description: |-
+  Protected — Returns all tasks assigned to the currently authenticated user.
+
+  Accepts optional filters (same fields as `tasks` query).
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "query AssignedTasks($filters: TaskFiltersInput) { assignedTasks(filters: $filters) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }"
+    }
+order: 8000

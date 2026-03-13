@@ -1,0 +1,16 @@
+$kind: http-request
+description: |-
+  Protected — Returns all tasks created by the current user via the federated
+  gateway.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query MyTasks { myTasks { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }"
+    }
+order: 2000

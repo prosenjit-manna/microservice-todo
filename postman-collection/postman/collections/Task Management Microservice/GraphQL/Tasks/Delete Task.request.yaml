@@ -1,0 +1,25 @@
+$kind: http-request
+description: |-
+  Protected — Soft-deletes a task (sets `isActive: false`). Only the task
+  creator can delete it.
+
+  Uses `task_id` collection variable (auto-set by **Create Task**).
+
+  Note: Deleted tasks are hidden from list queries but remain in the database.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation DeleteTask($id: ID!) { deleteTask(id: $id) { _id title isActive updatedAt } }",
+      "variables": {
+        "id": "{{task_id}}"
+      }
+    }
+order: 9000

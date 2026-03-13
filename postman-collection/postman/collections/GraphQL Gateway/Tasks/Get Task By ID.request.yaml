@@ -1,0 +1,20 @@
+$kind: http-request
+description: |-
+  Protected — Returns a single task by ID via the federated gateway.
+
+  Uses `task_id` collection variable (auto-set by **Create Task**).
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Task($id: ID!) { task(id: $id) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "id": "{{task_id}}"
+      }
+    }
+order: 4000

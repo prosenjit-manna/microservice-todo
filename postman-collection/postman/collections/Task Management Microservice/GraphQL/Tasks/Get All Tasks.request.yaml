@@ -1,0 +1,28 @@
+$kind: http-request
+description: |-
+  Protected — Returns all active tasks. Accepts optional filters.
+
+  **Optional filter fields:** `status`, `priority`, `creatorId`, `assigneeId`,
+  `tags` (array), `dueBefore` (ISO-8601), `dueAfter` (ISO-8601)
+
+  Remove the `filters` variable from the request body to retrieve all tasks
+  without filtering.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Tasks($filters: TaskFiltersInput) { tasks(filters: $filters) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "filters": {
+          "status": "todo"
+        }
+      }
+    }
+order: 5000

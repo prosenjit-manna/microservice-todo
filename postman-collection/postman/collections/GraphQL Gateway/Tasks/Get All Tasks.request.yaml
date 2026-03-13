@@ -1,0 +1,19 @@
+$kind: http-request
+description: |-
+  Protected — Returns all active tasks with optional filters via the federated
+  gateway.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Tasks($filters: TaskFiltersInput) { tasks(filters: $filters) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "filters": {}
+      }
+    }
+order: 3000

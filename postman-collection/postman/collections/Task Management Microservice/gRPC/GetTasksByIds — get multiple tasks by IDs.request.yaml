@@ -1,0 +1,42 @@
+$kind: http-request
+description: |-
+  **gRPC — TaskService.GetTasksByIds**
+
+  Proto package: `task`  
+  Service: `TaskService`  
+  Method: `GetTasksByIds`  
+  Server URL: `localhost:50052`  
+  Proto file: `src/proto/task.proto`
+
+  Returns multiple tasks by their MongoDB `_id` values in one call.
+  Tasks that are not found are silently omitted from the response.
+
+  **Request message:**
+  ```json
+  { "ids": ["<id-1>", "<id-2>"] }
+  ```
+
+  **Response message:**
+  ```json
+  {
+    "tasks": [
+      { "id": "...", "title": "...", ... },
+      { "id": "...", "title": "...", ... }
+    ]
+  }
+  ```
+url: "{{grpc_url}}"
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: X-Grpc-Note
+    value: "Use Postman gRPC client: package=task, service=TaskService, method=GetTasksByIds"
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "ids": ["{{task_id}}"]
+    }
+order: 4000

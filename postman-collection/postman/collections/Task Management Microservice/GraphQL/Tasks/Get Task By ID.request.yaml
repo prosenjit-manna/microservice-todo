@@ -1,0 +1,22 @@
+$kind: http-request
+description: |-
+  Protected — Returns a single task by its MongoDB `_id`.
+
+  Uses the `task_id` collection variable (auto-set by **Create Task**).
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Task($id: ID!) { task(id: $id) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "id": "{{task_id}}"
+      }
+    }
+order: 6000

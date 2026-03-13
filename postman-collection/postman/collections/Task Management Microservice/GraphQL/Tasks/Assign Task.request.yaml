@@ -1,0 +1,28 @@
+$kind: http-request
+description: |-
+  Protected — Assigns a task to another user (or unassigns it). Only the task
+  creator can perform this action.
+
+  Uses `task_id` collection variable (auto-set by **Create Task**).
+
+  To **unassign** a task, omit `assigneeId` or set it to `null`.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation AssignTask($input: AssignTaskInput!) { assignTask(assignTaskInput: $input) { _id title status priority creatorId assigneeId updatedAt } }",
+      "variables": {
+        "input": {
+          "taskId": "{{task_id}}",
+          "assigneeId": "{{user_id}}"
+        }
+      }
+    }
+order: 3000

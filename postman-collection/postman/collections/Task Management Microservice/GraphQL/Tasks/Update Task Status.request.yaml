@@ -1,0 +1,28 @@
+$kind: http-request
+description: |-
+  Protected — Updates the status of a task. Both the creator and the assignee
+  can change task status.
+
+  Uses `task_id` collection variable (auto-set by **Create Task**).
+
+  **Valid status values:** `todo`, `in_progress`, `completed`, `cancelled`
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation UpdateTaskStatus($input: UpdateTaskStatusInput!) { updateTaskStatus(updateTaskStatusInput: $input) { _id title status priority creatorId assigneeId updatedAt } }",
+      "variables": {
+        "input": {
+          "taskId": "{{task_id}}",
+          "status": "in_progress"
+        }
+      }
+    }
+order: 4000

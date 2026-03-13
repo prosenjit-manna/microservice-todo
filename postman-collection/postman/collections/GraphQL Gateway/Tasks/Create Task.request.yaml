@@ -1,0 +1,37 @@
+$kind: http-request
+description: |-
+  Protected — Creates a new task via the federated gateway (proxied to Task
+  Management subgraph). The gateway injects `x-user-id` and `x-user-email`
+  headers from the JWT token automatically.
+
+  The `afterResponse` script saves `task_id` to collection variables.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation CreateTask($input: CreateTaskInput!) { createTask(createTaskInput: $input) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "input": {
+          "title": "Federated task from gateway",
+          "description": "Created via the Apollo Federation gateway",
+          "priority": "high",
+          "tags": ["gateway", "federated"]
+        }
+      }
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      const json = pm.response.json();
+      const task = json?.data?.createTask;
+      if (task?._id) {
+        pm.collectionVariables.set('task_id', task._id);
+        console.log('task_id saved:', task._id);
+      }
+order: 1000

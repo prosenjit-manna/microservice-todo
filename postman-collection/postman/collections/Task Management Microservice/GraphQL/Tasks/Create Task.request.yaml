@@ -1,0 +1,44 @@
+$kind: http-request
+description: |-
+  Protected — Creates a new task. The creator is automatically set to the
+  current authenticated user (`x-user-id` header).
+
+  **Required fields:** `title`
+
+  **Optional fields:** `description`, `priority` (low | medium | high | critical),
+  `assigneeId`, `dueDate` (ISO-8601), `tags`
+
+  The response saves `task_id` to the collection variable for use in
+  subsequent requests.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  x-user-id: "{{user_id}}"
+  x-user-email: "{{user_email}}"
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation CreateTask($input: CreateTaskInput!) { createTask(createTaskInput: $input) { _id title description status priority creatorId assigneeId dueDate tags isActive createdAt updatedAt } }",
+      "variables": {
+        "input": {
+          "title": "My first task",
+          "description": "A sample task created via Postman",
+          "priority": "medium",
+          "tags": ["sample", "postman"]
+        }
+      }
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      const json = pm.response.json();
+      const task = json?.data?.createTask;
+      if (task?._id) {
+        pm.collectionVariables.set('task_id', task._id);
+        console.log('task_id saved:', task._id);
+      }
+order: 1000

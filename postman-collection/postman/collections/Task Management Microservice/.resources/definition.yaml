@@ -1,0 +1,28 @@
+$kind: collection
+description: >-
+  GraphQL and gRPC endpoints for the Task Management microservice.
+
+
+  **Base URL:** `http://localhost:3002/graphql`
+
+
+  **Auth:** All requests require the `x-user-id` and `x-user-email` headers to
+  be forwarded by the API Gateway. When calling directly (bypassing the
+  gateway), set these headers manually using the collection variables
+  `user_id` and `user_email`.
+
+
+  Run the **Login** request from the User Management collection first to obtain
+  a `token`, then set `user_id` and `user_email` variables in this collection.
+
+
+  **gRPC:** Requests in the gRPC folder use Postman's native gRPC client. Import
+  `src/proto/task.proto` when prompted. Server reflection is not enabled; use
+  the proto file directly.
+variables:
+  graphql_url: http://localhost:3002/graphql
+  grpc_url: localhost:50052
+  token: ""
+  user_id: ""
+  user_email: ""
+  task_id: ""

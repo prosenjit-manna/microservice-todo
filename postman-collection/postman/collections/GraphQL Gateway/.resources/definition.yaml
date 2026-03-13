@@ -1,0 +1,28 @@
+$kind: collection
+description: >-
+  Federated GraphQL endpoint for the Apollo Gateway — a single entry point
+  that merges the User Management and Task Management subgraph schemas.
+
+
+  **Base URL:** `http://localhost:4000/graphql`
+
+
+  **Auth:** Pass a JWT `Authorization: Bearer {{token}}` header. The gateway
+  forwards `authorization`, `x-user-id`, and `x-user-email` headers to each
+  subgraph automatically.
+
+
+  **Workflow:**
+
+  1. Run **Login** from the User Management collection to obtain `token` and
+  `user_id`.
+
+  2. Set `token`, `user_id`, and `user_email` in this collection's variables.
+
+  3. Use the federated queries here to query both subgraphs in a single request.
+variables:
+  graphql_url: http://localhost:4000/graphql
+  token: ""
+  user_id: ""
+  user_email: ""
+  task_id: ""

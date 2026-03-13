@@ -1,0 +1,47 @@
+$kind: http-request
+description: |-
+  **gRPC — TaskService.GetTask**
+
+  Proto package: `task`  
+  Service: `TaskService`  
+  Method: `GetTask`  
+  Server URL: `localhost:50052`  
+  Proto file: `src/proto/task.proto`
+
+  **Request message:**
+  ```json
+  { "id": "<mongodb-object-id>" }
+  ```
+
+  **Response message:**
+  ```json
+  {
+    "id": "...",
+    "title": "My first task",
+    "description": "A sample task",
+    "status": "todo",
+    "priority": "medium",
+    "creatorId": "...",
+    "assigneeId": "",
+    "dueDate": "",
+    "tags": ["sample"],
+    "isActive": true,
+    "createdAt": "2026-03-13T09:00:00.000Z",
+    "updatedAt": "2026-03-13T09:00:00.000Z"
+  }
+  ```
+url: "{{grpc_url}}"
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: X-Grpc-Note
+    value: "Use Postman gRPC client: package=task, service=TaskService, method=GetTask"
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "id": "{{task_id}}"
+    }
+order: 1000

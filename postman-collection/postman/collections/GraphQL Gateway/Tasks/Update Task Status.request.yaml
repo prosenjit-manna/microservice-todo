@@ -1,0 +1,26 @@
+$kind: http-request
+description: |-
+  Protected — Updates the status of a task via the federated gateway.
+
+  Uses `task_id` collection variable. Both the creator and assignee can change
+  task status.
+
+  **Valid status values:** `todo`, `in_progress`, `completed`, `cancelled`
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation UpdateTaskStatus($input: UpdateTaskStatusInput!) { updateTaskStatus(updateTaskStatusInput: $input) { _id title status updatedAt } }",
+      "variables": {
+        "input": {
+          "taskId": "{{task_id}}",
+          "status": "in_progress"
+        }
+      }
+    }
+order: 5000

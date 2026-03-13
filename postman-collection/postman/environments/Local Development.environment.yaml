@@ -1,0 +1,62 @@
+name: Local Development
+values:
+  # ── User Management ───────────────────────────────────────────────────
+  - key: um_graphql_url
+    value: http://localhost:3001/graphql
+    type: default
+    enabled: true
+
+  - key: um_grpc_url
+    value: localhost:50051
+    type: default
+    enabled: true
+
+  # ── Task Management ───────────────────────────────────────────────────
+  - key: tm_graphql_url
+    value: http://localhost:3002/graphql
+    type: default
+    enabled: true
+
+  - key: tm_grpc_url
+    value: localhost:50052
+    type: default
+    enabled: true
+
+  # ── GraphQL Gateway ───────────────────────────────────────────────────
+  - key: gateway_graphql_url
+    value: http://localhost:4000/graphql
+    type: default
+    enabled: true
+
+  # ── Auth (filled dynamically by Login request) ────────────────────────
+  - key: token
+    value: ""
+    type: secret
+    enabled: true
+
+  - key: user_id
+    value: ""
+    type: default
+    enabled: true
+
+  - key: user_email
+    value: ""
+    type: default
+    enabled: true
+
+  # ── Task (filled dynamically by Create Task request) ──────────────────
+  - key: task_id
+    value: ""
+    type: default
+    enabled: true
+
+  # ── Test credentials ──────────────────────────────────────────────────
+  - key: test_email
+    value: alice@example.com
+    type: default
+    enabled: true
+
+  - key: test_password
+    value: password123
+    type: secret
+    enabled: true
