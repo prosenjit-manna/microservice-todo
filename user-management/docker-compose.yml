@@ -1,0 +1,72 @@
+services:
+  user-management:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-management
+    ports:
+      - '3001:3001'   # HTTP / GraphQL
+      - '50051:50051' # gRPC
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/user-management
+      - JWT_SECRET=dev-secret-change-in-production-min-32-chars
+      - JWT_EXPIRES_IN=7d
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - GRPC_URL=0.0.0.0:50051
+      - GRPC_ENABLED=true
+      - LOG_DIR=/app/logs
+      - LOG_LEVEL=debug
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - microservice-network
+
+  mongo:
+    image: mongo:7
+    container_name: user-management-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservice-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: user-management-rabbitmq
+    ports:
+      - '5672:5672'   # AMQP
+      - '15672:15672' # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservice-network
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
+
+networks:
+  microservice-network:
+    driver: bridge

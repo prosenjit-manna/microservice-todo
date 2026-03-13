@@ -40,6 +40,9 @@ I want to just a todo application with the following functionalities:
 - I want to use Argo CD for continuous deployment of microservices to Kubernetes cluster.
 - I want to implement microservice communication with mQtt protocol using RabbitMQ as the message broker where possible 
 - I want to implement backend communication with gRPC protocol where possible for better performance and efficiency code first for type safe everywhere .
+- I want to create postman collection for all microservices APIs for testing and documentation purposes.
+- Every microservice should have its own database for better scalability and maintainability.
+- Every microservice should have its own readme file with clear documentation on how to set up and run the microservice locally 
 
 
 ## Stacks Phase 2

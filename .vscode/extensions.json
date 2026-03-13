@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    // Proto / gRPC
+    "zxh404.vscode-proto3",
+    "pbkit.vscode-pbkit"
+  ]
+}
