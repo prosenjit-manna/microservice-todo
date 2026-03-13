@@ -38,6 +38,8 @@ I want to just a todo application with the following functionalities:
 - I want to implement Unit testing for all microservices using Jest
 - I want to implement E2E testing for all microservices using Playwright
 - I want to use Argo CD for continuous deployment of microservices to Kubernetes cluster.
+- I want to implement microservice communication with mQtt protocol using RabbitMQ as the message broker where possible 
+- I want to implement backend communication with gRPC protocol where possible for better performance and efficiency code first for type safe everywhere .
 
 
 ## Stacks Phase 2

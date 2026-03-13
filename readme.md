@@ -1,0 +1,2 @@
+# Microservice Learning Todo App
+I want to create a todo application using microservices architecture. This project will help me learn and understand the concepts of microservices, their communication, and how to manage them effectively. I will be using various technologies and tools to build this application, and I will document my learning process along the way.
