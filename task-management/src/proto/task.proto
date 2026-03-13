@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package task;
+
+// TaskService – gRPC service for inter-microservice communication
+service TaskService {
+  rpc GetTask (GetTaskRequest) returns (TaskResponse);
+  rpc GetTasksByAssignee (GetTasksByAssigneeRequest) returns (TasksResponse);
+  rpc GetTasksByCreator (GetTasksByCreatorRequest) returns (TasksResponse);
+  rpc GetTasksByIds (GetTasksByIdsRequest) returns (TasksResponse);
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message GetTasksByAssigneeRequest {
+  string assigneeId = 1;
+}
+
+message GetTasksByCreatorRequest {
+  string creatorId = 1;
+}
+
+message GetTasksByIdsRequest {
+  repeated string ids = 1;
+}
+
+message TaskResponse {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string status = 4;
+  string priority = 5;
+  string creatorId = 6;
+  string assigneeId = 7;
+  string dueDate = 8;
+  repeated string tags = 9;
+  bool isActive = 10;
+  string createdAt = 11;
+  string updatedAt = 12;
+}
+
+message TasksResponse {
+  repeated TaskResponse tasks = 1;
+}
