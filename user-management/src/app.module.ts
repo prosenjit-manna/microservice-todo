@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
@@ -8,6 +8,7 @@ import { join } from 'path';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { winstonConfig } from './common/logger/winston.logger';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -26,11 +27,14 @@ import { winstonConfig } from './common/logger/winston.logger';
       inject: [ConfigService],
     }),
 
-    // GraphQL (code-first, Apollo Federation ready)
+    // GraphQL – Apollo Federation v2 subgraph
     // autoSchemaFile writes to dist/ so the non-root Docker user has write permission
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'dist/schema.gql'),
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      autoSchemaFile: {
+        path: join(process.cwd(), 'dist/schema.gql'),
+        federation: 2,
+      },
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       context: ({ req }) => ({ req }),
@@ -39,5 +43,6 @@ import { winstonConfig } from './common/logger/winston.logger';
     UsersModule,
     AuthModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}

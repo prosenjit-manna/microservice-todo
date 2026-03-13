@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, ResolveReference } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './schemas/user.schema';
@@ -11,6 +11,12 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
+
+  // Federation: resolve User entity by _id when requested by another subgraph
+  @ResolveReference()
+  async resolveReference(reference: { __typename: string; _id: string }): Promise<User> {
+    return this.usersService.findOne(reference._id);
+  }
 
   // Public: register a new user
   @Mutation(() => User, { description: 'Register a new user account' })

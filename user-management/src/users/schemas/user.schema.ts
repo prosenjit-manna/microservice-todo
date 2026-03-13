@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, registerEnumType, Directive } from '@nestjs/graphql';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -15,6 +15,7 @@ registerEnumType(UserRole, {
 export type UserDocument = HydratedDocument<User>;
 
 @ObjectType()
+@Directive('@key(fields: "_id")')
 @Schema({ timestamps: true, versionKey: false })
 export class User {
   @Field(() => ID)

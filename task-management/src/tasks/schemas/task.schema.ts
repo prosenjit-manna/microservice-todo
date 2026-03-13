@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, registerEnumType, Directive } from '@nestjs/graphql';
 
 export enum TaskStatus {
   TODO = 'todo',
@@ -29,6 +29,7 @@ registerEnumType(TaskPriority, {
 export type TaskDocument = HydratedDocument<Task>;
 
 @ObjectType()
+@Directive('@key(fields: "_id")')
 @Schema({ timestamps: true, versionKey: false })
 export class Task {
   @Field(() => ID)

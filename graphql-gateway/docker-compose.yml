@@ -1,0 +1,148 @@
+# GraphQL Federation Gateway – standalone compose
+# Starts the gateway + both subgraphs + their backing services.
+# For production orchestration prefer the root-level compose / Kubernetes manifests.
+
+services:
+  # ── GraphQL Gateway ──────────────────────────────────────────────────────
+  graphql-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: graphql-gateway
+    ports:
+      - '4000:4000'
+    environment:
+      PORT: 4000
+      NODE_ENV: development
+      USER_MANAGEMENT_URL: http://user-management:3001/graphql
+      TASK_MANAGEMENT_URL: http://task-management:3002/graphql
+      LOG_DIR: /app/logs
+      LOG_LEVEL: debug
+    depends_on:
+      user-management:
+        condition: service_healthy
+      task-management:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - gateway-network
+
+  # ── User Management subgraph ─────────────────────────────────────────────
+  user-management:
+    build:
+      context: ../user-management
+      dockerfile: Dockerfile
+    container_name: um-subgraph
+    ports:
+      - '3001:3001'
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      MONGODB_URI: mongodb://um-mongo:27017/user-management
+      JWT_SECRET: dev-secret-change-in-production-min-32-chars
+      JWT_EXPIRES_IN: 7d
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      GRPC_ENABLED: 'false'
+      LOG_DIR: /app/logs
+      LOG_LEVEL: debug
+    depends_on:
+      um-mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3001/health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - gateway-network
+
+  # ── Task Management subgraph ─────────────────────────────────────────────
+  task-management:
+    build:
+      context: ../task-management
+      dockerfile: Dockerfile
+    container_name: tm-subgraph
+    ports:
+      - '3002:3002'
+    environment:
+      PORT: 3002
+      NODE_ENV: development
+      MONGODB_URI: mongodb://tm-mongo:27017/task-management
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      GRPC_ENABLED: 'false'
+      LOG_DIR: /app/logs
+      LOG_LEVEL: debug
+    depends_on:
+      tm-mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3002/health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - gateway-network
+
+  # ── Databases ─────────────────────────────────────────────────────────────
+  um-mongo:
+    image: mongo:7
+    container_name: um-mongo
+    volumes:
+      - um_mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gateway-network
+
+  tm-mongo:
+    image: mongo:7
+    container_name: tm-mongo
+    volumes:
+      - tm_mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gateway-network
+
+  # ── Message broker (shared) ───────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gateway-rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gateway-network
+
+volumes:
+  um_mongo_data:
+  tm_mongo_data:
+  rabbitmq_data:
+
+networks:
+  gateway-network:
+    driver: bridge

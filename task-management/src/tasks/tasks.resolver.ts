@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, ResolveReference } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './schemas/task.schema';
@@ -14,6 +14,12 @@ import { CurrentUser, GatewayUser } from '../auth/decorators/current-user.decora
 @UseGuards(GatewayAuthGuard)
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
+
+  // Federation: resolve Task entity by _id when referenced by another subgraph
+  @ResolveReference()
+  async resolveReference(reference: { __typename: string; _id: string }): Promise<Task> {
+    return this.tasksService.findOne(reference._id);
+  }
 
   // ── Mutations ─────────────────────────────────────────────────────────
 
