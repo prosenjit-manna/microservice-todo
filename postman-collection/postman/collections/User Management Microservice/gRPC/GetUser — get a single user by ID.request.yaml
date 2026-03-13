@@ -1,0 +1,47 @@
+$kind: http-request
+description: |-
+  **gRPC — UserService.GetUser**
+
+  Proto package: `user`  
+  Service: `UserService`  
+  Method: `GetUser`  
+  Server URL: `localhost:50051`  
+  Proto file: `src/proto/user.proto`
+
+  **Request message:**
+  ```json
+  { "id": "<mongodb-object-id>" }
+  ```
+
+  **Response message:**
+  ```json
+  {
+    "id": "...",
+    "email": "alice@example.com",
+    "username": "alice",
+    "firstName": "Alice",
+    "lastName": "Smith",
+    "avatar": "",
+    "bio": "",
+    "roles": ["user"],
+    "isActive": true,
+    "createdAt": "2026-03-13T09:00:00.000Z",
+    "updatedAt": "2026-03-13T09:00:00.000Z"
+  }
+  ```
+url: "{{grpc_url}}"
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: X-Grpc-Note
+    value: "Use Postman gRPC client: package=user, service=UserService,
+      method=GetUser"
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "id": "{{user_id}}"
+    }
+order: 1000

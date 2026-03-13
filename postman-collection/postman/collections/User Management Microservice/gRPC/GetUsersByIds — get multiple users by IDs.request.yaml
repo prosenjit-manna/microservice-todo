@@ -1,0 +1,40 @@
+$kind: http-request
+description: |-
+  **gRPC — UserService.GetUsersByIds**
+
+  Proto package: `user`  
+  Service: `UserService`  
+  Method: `GetUsersByIds`  
+  Server URL: `localhost:50051`  
+  Proto file: `src/proto/user.proto`
+
+  **Request message:**
+  ```json
+  { "ids": ["<id1>", "<id2>"] }
+  ```
+
+  **Response message:**
+  ```json
+  {
+    "users": [
+      { "id": "...", "email": "alice@example.com", ... },
+      { "id": "...", "email": "bob@example.com",  ... }
+    ]
+  }
+  ```
+url: "{{grpc_url}}"
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: X-Grpc-Note
+    value: "Use Postman gRPC client: package=user, service=UserService,
+      method=GetUsersByIds"
+    disabled: true
+body:
+  type: json
+  content: |-
+    {
+      "ids": ["{{user_id}}", "<another-id>"]
+    }
+order: 2000

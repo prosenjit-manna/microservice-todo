@@ -1,0 +1,14 @@
+$kind: http-request
+description: Protected — Returns the profile of the currently authenticated user.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Me { me { _id email username firstName lastName bio avatar roles isActive createdAt updatedAt } }"
+    }
+order: 1000

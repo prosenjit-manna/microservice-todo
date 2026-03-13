@@ -1,0 +1,284 @@
+{
+  "info": {
+    "_postman_id": "um-collection-001",
+    "name": "User Management Microservice",
+    "description": "GraphQL and gRPC endpoints for the User Management microservice.\n\n**Base URL:** `http://localhost:3001/graphql`\n\n**Auth:** After calling `login`, copy the `accessToken` from the response and set the collection variable `token`.\n\n**gRPC:** Requests in the gRPC folder use Postman's native gRPC client. Import `src/proto/user.proto` when prompted.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "graphql_url",
+      "value": "http://localhost:3001/graphql",
+      "type": "string"
+    },
+    {
+      "key": "grpc_url",
+      "value": "localhost:50051",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Paste the accessToken from the login response here"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "Set after register/login"
+    }
+  ],
+  "item": [
+    {
+      "name": "GraphQL",
+      "description": "All GraphQL operations exposed at POST http://localhost:3001/graphql",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Register",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const res = pm.response.json();",
+                      "if (res.data && res.data.register) {",
+                      "  pm.collectionVariables.set('user_id', res.data.register._id);",
+                      "  console.log('Registered user id:', res.data.register._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation Register($input: CreateUserInput!) { register(createUserInput: $input) { _id email username firstName lastName roles isActive createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"alice@example.com\",\n      \"username\": \"alice\",\n      \"password\": \"Secret123!\",\n      \"firstName\": \"Alice\",\n      \"lastName\": \"Smith\"\n    }\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Public — Register a new user account.\n\nAuto-saves `_id` to the `user_id` collection variable."
+              }
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const res = pm.response.json();",
+                      "if (res.data && res.data.login) {",
+                      "  pm.collectionVariables.set('token', res.data.login.accessToken);",
+                      "  pm.collectionVariables.set('user_id', res.data.login.user._id);",
+                      "  console.log('Token saved.');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation Login($input: LoginInput!) { login(loginInput: $input) { accessToken user { _id email username roles } } }\",\n  \"variables\": {\n    \"input\": {\n      \"emailOrUsername\": \"alice@example.com\",\n      \"password\": \"Secret123!\"\n    }\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Public — Login with email/username and password.\n\nAuto-saves `accessToken` to the `token` collection variable and `_id` to `user_id`."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "Me (get current user)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query Me { me { _id email username firstName lastName bio avatar roles isActive createdAt updatedAt } }\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Returns the profile of the currently authenticated user."
+              }
+            },
+            {
+              "name": "Get All Users",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query Users { users { _id email username firstName lastName roles isActive createdAt } }\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Returns all active users."
+              }
+            },
+            {
+              "name": "Get User By ID",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query User($id: ID!) { user(id: $id) { _id email username firstName lastName bio avatar roles isActive createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"{{user_id}}\"\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Returns a single user by their MongoDB `_id`.\n\nUses the `user_id` collection variable."
+              }
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation UpdateProfile($input: UpdateUserInput!) { updateProfile(updateUserInput: $input) { _id firstName lastName bio avatar updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"firstName\": \"Alicia\",\n      \"lastName\": \"Smith\",\n      \"bio\": \"Software developer\",\n      \"avatar\": \"https://example.com/avatar.png\"\n    }\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Updates the authenticated user's profile (firstName, lastName, bio, avatar)."
+              }
+            },
+            {
+              "name": "Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation ChangePassword($input: ChangePasswordInput!) { changePassword(changePasswordInput: $input) { _id email updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"currentPassword\": \"Secret123!\",\n      \"newPassword\": \"NewSecret456!\"\n    }\n  }\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Changes the authenticated user's password."
+              }
+            },
+            {
+              "name": "Delete Account",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation DeleteAccount { deleteAccount { _id email } }\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{graphql_url}}", "host": ["{{graphql_url}}"] },
+                "description": "Protected — Soft-deletes the authenticated user's account."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gRPC",
+      "description": "gRPC methods defined in src/proto/user.proto.\n\n**How to use in Postman:**\n1. Create a new gRPC request.\n2. Set the URL to `{{grpc_url}}` → `localhost:50051`.\n3. Click \"Import a .proto file\" and select `user-management/src/proto/user.proto`.\n4. Select the method from the dropdown and paste the message body below.\n\nNote: gRPC requests cannot be stored as standard collection items in Postman v10. The entries below document the method name, proto package, and example request payloads for reference.",
+      "item": [
+        {
+          "name": "GetUser — get a single user by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              {
+                "key": "X-Grpc-Note",
+                "value": "Use Postman gRPC client: package=user, service=UserService, method=GetUser",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{user_id}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{grpc_url}}", "host": ["{{grpc_url}}"] },
+            "description": "**gRPC — UserService.GetUser**\n\nProto package: `user`  \nService: `UserService`  \nMethod: `GetUser`  \nServer URL: `localhost:50051`  \nProto file: `src/proto/user.proto`\n\n**Request message:**\n```json\n{ \"id\": \"<mongodb-object-id>\" }\n```\n\n**Response message:**\n```json\n{\n  \"id\": \"...\",\n  \"email\": \"alice@example.com\",\n  \"username\": \"alice\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Smith\",\n  \"avatar\": \"\",\n  \"bio\": \"\",\n  \"roles\": [\"user\"],\n  \"isActive\": true,\n  \"createdAt\": \"2026-03-13T09:00:00.000Z\",\n  \"updatedAt\": \"2026-03-13T09:00:00.000Z\"\n}\n```"
+          }
+        },
+        {
+          "name": "GetUsersByIds — get multiple users by IDs",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              {
+                "key": "X-Grpc-Note",
+                "value": "Use Postman gRPC client: package=user, service=UserService, method=GetUsersByIds",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"{{user_id}}\", \"<another-id>\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{grpc_url}}", "host": ["{{grpc_url}}"] },
+            "description": "**gRPC — UserService.GetUsersByIds**\n\nProto package: `user`  \nService: `UserService`  \nMethod: `GetUsersByIds`  \nServer URL: `localhost:50051`  \nProto file: `src/proto/user.proto`\n\n**Request message:**\n```json\n{ \"ids\": [\"<id1>\", \"<id2>\"] }\n```\n\n**Response message:**\n```json\n{\n  \"users\": [\n    { \"id\": \"...\", \"email\": \"alice@example.com\", ... },\n    { \"id\": \"...\", \"email\": \"bob@example.com\",  ... }\n  ]\n}\n```"
+          }
+        },
+        {
+          "name": "ValidateUser — validate credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              {
+                "key": "X-Grpc-Note",
+                "value": "Use Postman gRPC client: package=user, service=UserService, method=ValidateUser",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"Secret123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{grpc_url}}", "host": ["{{grpc_url}}"] },
+            "description": "**gRPC — UserService.ValidateUser**\n\nProto package: `user`  \nService: `UserService`  \nMethod: `ValidateUser`  \nServer URL: `localhost:50051`  \nProto file: `src/proto/user.proto`\n\nUsed by the API Gateway or Auth service to verify user credentials.\n\n**Request message:**\n```json\n{ \"email\": \"alice@example.com\", \"password\": \"Secret123!\" }\n```\n\n**Response message (valid):**\n```json\n{\n  \"isValid\": true,\n  \"user\": { \"id\": \"...\", \"email\": \"alice@example.com\", ... }\n}\n```\n\n**Response message (invalid):**\n```json\n{ \"isValid\": false, \"user\": null }\n```"
+          }
+        }
+      ]
+    }
+  ]
+}

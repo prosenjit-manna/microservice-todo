@@ -6,7 +6,7 @@ services:
     container_name: user-management
     ports:
       - '3001:3001'   # HTTP / GraphQL
-      - '50051:50051' # gRPC
+      - '50052:50051' # gRPC
     environment:
       - PORT=3001
       - NODE_ENV=development
@@ -14,7 +14,7 @@ services:
       - JWT_SECRET=dev-secret-change-in-production-min-32-chars
       - JWT_EXPIRES_IN=7d
       - RABBITMQ_URL=amqp://rabbitmq:5672
-      - GRPC_URL=0.0.0.0:50051
+      - GRPC_URL=0.0.0.0:50052
       - GRPC_ENABLED=true
       - LOG_DIR=/app/logs
       - LOG_LEVEL=debug

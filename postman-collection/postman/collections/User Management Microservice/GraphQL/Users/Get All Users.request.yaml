@@ -1,0 +1,14 @@
+$kind: http-request
+description: Protected — Returns all active users.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query Users { users { _id email username firstName lastName roles isActive createdAt } }"
+    }
+order: 2000

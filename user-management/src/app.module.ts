@@ -27,9 +27,10 @@ import { winstonConfig } from './common/logger/winston.logger';
     }),
 
     // GraphQL (code-first, Apollo Federation ready)
+    // autoSchemaFile writes to dist/ so the non-root Docker user has write permission
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: join(process.cwd(), 'dist/schema.gql'),
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       context: ({ req }) => ({ req }),

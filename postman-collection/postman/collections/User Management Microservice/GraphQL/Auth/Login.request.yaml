@@ -1,0 +1,34 @@
+$kind: http-request
+description: >-
+  Public — Login with email/username and password.
+
+
+  Auto-saves `accessToken` to the `token` collection variable and `_id` to
+  `user_id`.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation Login($input: LoginInput!) { login(loginInput: $input) { accessToken user { _id email username roles } } }",
+      "variables": {
+        "input": {
+          "emailOrUsername": "alice@example.com",
+          "password": "Secret123!"
+        }
+      }
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.data && res.data.login) {
+        pm.collectionVariables.set('token', res.data.login.accessToken);
+        pm.collectionVariables.set('user_id', res.data.login.user._id);
+        console.log('Token saved.');
+      }
+    language: text/javascript
+order: 2000

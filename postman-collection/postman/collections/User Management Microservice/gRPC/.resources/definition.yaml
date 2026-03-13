@@ -1,0 +1,21 @@
+$kind: collection
+description: >-
+  gRPC methods defined in src/proto/user.proto.
+
+
+  **How to use in Postman:**
+
+  1. Create a new gRPC request.
+
+  2. Set the URL to `{{grpc_url}}` → `localhost:50051`.
+
+  3. Click "Import a .proto file" and select
+  `user-management/src/proto/user.proto`.
+
+  4. Select the method from the dropdown and paste the message body below.
+
+
+  Note: gRPC requests cannot be stored as standard collection items in Postman
+  v10. The entries below document the method name, proto package, and example
+  request payloads for reference.
+order: 2000

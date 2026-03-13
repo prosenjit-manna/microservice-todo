@@ -1,0 +1,14 @@
+$kind: http-request
+description: Protected — Soft-deletes the authenticated user's account.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: |-
+    {
+      "query": "mutation DeleteAccount { deleteAccount { _id email } }"
+    }
+order: 6000

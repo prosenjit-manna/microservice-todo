@@ -1,0 +1,19 @@
+$kind: collection
+description: >-
+  GraphQL and gRPC endpoints for the User Management microservice.
+
+
+  **Base URL:** `http://localhost:3001/graphql`
+
+
+  **Auth:** After calling `login`, copy the `accessToken` from the response and
+  set the collection variable `token`.
+
+
+  **gRPC:** Requests in the gRPC folder use Postman's native gRPC client. Import
+  `src/proto/user.proto` when prompted.
+variables:
+  graphql_url: http://localhost:3001/graphql
+  grpc_url: localhost:50051
+  token: ""
+  user_id: ""

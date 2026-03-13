@@ -1,0 +1,20 @@
+$kind: http-request
+description: |-
+  Protected — Returns a single user by their MongoDB `_id`.
+
+  Uses the `user_id` collection variable.
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "query User($id: ID!) { user(id: $id) { _id email username firstName lastName bio avatar roles isActive createdAt updatedAt } }",
+      "variables": {
+        "id": "{{user_id}}"
+      }
+    }
+order: 3000

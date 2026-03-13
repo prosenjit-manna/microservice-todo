@@ -1,0 +1,23 @@
+$kind: http-request
+description: Protected — Updates the authenticated user's profile (firstName,
+  lastName, bio, avatar).
+url: "{{graphql_url}}"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: >-
+    {
+      "query": "mutation UpdateProfile($input: UpdateUserInput!) { updateProfile(updateUserInput: $input) { _id firstName lastName bio avatar updatedAt } }",
+      "variables": {
+        "input": {
+          "firstName": "Alicia",
+          "lastName": "Smith",
+          "bio": "Software developer",
+          "avatar": "https://example.com/avatar.png"
+        }
+      }
+    }
+order: 4000
