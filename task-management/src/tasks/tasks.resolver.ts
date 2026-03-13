@@ -7,11 +7,11 @@ import { UpdateTaskInput } from './dto/update-task.input';
 import { AssignTaskInput } from './dto/assign-task.input';
 import { UpdateTaskStatusInput } from './dto/update-task-status.input';
 import { TaskFiltersInput } from './dto/task-filters.input';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser, JwtUser } from '../auth/decorators/current-user.decorator';
+import { GatewayAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser, GatewayUser } from '../auth/decorators/current-user.decorator';
 
 @Resolver(() => Task)
-@UseGuards(JwtAuthGuard)
+@UseGuards(GatewayAuthGuard)
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
 
@@ -20,7 +20,7 @@ export class TasksResolver {
   @Mutation(() => Task, { description: 'Create a new task' })
   async createTask(
     @Args('createTaskInput') createTaskInput: CreateTaskInput,
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
   ): Promise<Task> {
     return this.tasksService.create(createTaskInput, currentUser.userId);
   }
@@ -29,7 +29,7 @@ export class TasksResolver {
   async updateTask(
     @Args('id', { type: () => ID }) id: string,
     @Args('updateTaskInput') updateTaskInput: UpdateTaskInput,
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
   ): Promise<Task> {
     return this.tasksService.update(id, updateTaskInput, currentUser.userId);
   }
@@ -37,7 +37,7 @@ export class TasksResolver {
   @Mutation(() => Task, { description: 'Soft-delete a task (creator only)' })
   async deleteTask(
     @Args('id', { type: () => ID }) id: string,
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
   ): Promise<Task> {
     return this.tasksService.remove(id, currentUser.userId);
   }
@@ -45,7 +45,7 @@ export class TasksResolver {
   @Mutation(() => Task, { description: 'Assign (or unassign) a task to a user (creator only)' })
   async assignTask(
     @Args('assignTaskInput') assignTaskInput: AssignTaskInput,
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
   ): Promise<Task> {
     return this.tasksService.assignTask(assignTaskInput, currentUser.userId);
   }
@@ -53,7 +53,7 @@ export class TasksResolver {
   @Mutation(() => Task, { description: 'Update the status of a task (creator or assignee)' })
   async updateTaskStatus(
     @Args('updateTaskStatusInput') updateTaskStatusInput: UpdateTaskStatusInput,
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
   ): Promise<Task> {
     return this.tasksService.updateStatus(
       updateTaskStatusInput,
@@ -78,7 +78,7 @@ export class TasksResolver {
 
   @Query(() => [Task], { name: 'myTasks', description: 'Get tasks created by the current user' })
   async myTasks(
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
     @Args('filters', { type: () => TaskFiltersInput, nullable: true })
     filters?: TaskFiltersInput,
   ): Promise<Task[]> {
@@ -87,7 +87,7 @@ export class TasksResolver {
 
   @Query(() => [Task], { name: 'assignedTasks', description: 'Get tasks assigned to the current user' })
   async assignedTasks(
-    @CurrentUser() currentUser: JwtUser,
+    @CurrentUser() currentUser: GatewayUser,
     @Args('filters', { type: () => TaskFiltersInput, nullable: true })
     filters?: TaskFiltersInput,
   ): Promise<Task[]> {
